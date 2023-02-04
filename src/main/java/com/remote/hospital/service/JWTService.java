@@ -2,11 +2,11 @@ package com.remote.hospital.service;
 
 
 
+import com.remote.hospital.entity.*;
 import com.remote.hospital.entity.DTO.DoctorDTO;
-import com.remote.hospital.entity.Hospital;
-import com.remote.hospital.entity.Role;
-import com.remote.hospital.entity.User;
+import com.remote.hospital.repository.DoctorSpecializationRepository;
 import com.remote.hospital.repository.HospitalRepository;
+import com.remote.hospital.repository.SpecializationRepository;
 import com.remote.hospital.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,8 +31,12 @@ public class JWTService implements UserDetailsService {
     @Autowired
     private HospitalRepository hospitalRepository;
     @Autowired
+    private SpecializationRepository specializationRepository;
+    @Autowired
     private PasswordEncoder bcryptEncoder;
 
+    @Autowired
+    private DoctorSpecializationRepository doctorSpecializationRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByEmailAddress(username);
@@ -107,7 +111,21 @@ public class JWTService implements UserDetailsService {
         u.setCnic(d.cnic);
         u.setIsActive(true);
 
-        return userRepo.save(u );
+        User ur= userRepo.save(u );
+
+       for(int i =0; i<d.area.size();i++) {
+           Specialization s = specializationRepository.findByName(d.area.get(i).toString());
+            Doctor_Specialization ds = new Doctor_Specialization();
+            ds.setDoctorId(ur.getId());
+            ds.setSpecializationId(s.getId());
+            ds.setCreatedOn(new Date());
+            ds.setIsActive(true);
+            ds.setCreatedBy(ur.getId());
+            doctorSpecializationRepository.save(ds);
+       }
+       return  ur;
+//        Doctor_Specialization ds = doctorSpecializationRepository.findBySpecializationId(ur.getId());
+//        doctorSpecializationRepository.save()
     }
 
 

@@ -1,6 +1,6 @@
 package com.remote.hospital.controller;
 
-import com.remote.hospital.entity.Speacialization;
+import com.remote.hospital.entity.Specialization;
 import com.remote.hospital.service.SpecializationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +15,15 @@ public class SpecializationController {
     @Autowired
     public SpecializationService ss;
 
-    @GetMapping("/speacialization/")
-    public List<Speacialization> getAllSpecialization(){
+    @GetMapping("/specialization/")
+    public List<Specialization> getAllSpecialization(){
         return ss.GetAllspecialtion();
     }
 
-    @PostMapping("/speacialization/")
-    public Speacialization saveSpecialization(@RequestBody Speacialization s){
+
+
+    @PostMapping("/specialization/")
+    public Specialization saveSpecialization(@RequestBody Specialization s){
         return ss.CreateSpecialization(s);
     }
 

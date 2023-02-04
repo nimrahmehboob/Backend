@@ -76,18 +76,24 @@ public class UserController {
         return userService.getDoctors();
 
     }
+
+    @GetMapping("/all-doctors/")
+    public  List<DoctorDTO> getAllDoctors(){
+
+        return userService.getAllDoctorsWithAreas();
+    }
+
     @RequestMapping(value = "/register/doctor", method = RequestMethod.POST)
     public ResponseEntity<?> saveUser(@RequestBody DoctorDTO user) throws Exception {
 
         User u = new User();
         if (userService.getUserByEmail(user.email) != null) {
-            return ResponseEntity.ok("User already exists");
+            return ResponseEntity.ok("User already exists with this email!");
         }
 
 
-        u.setCreated_on(new Date());
-        u.setCreated_by(Integer.toUnsignedLong(0));
-        return ResponseEntity.ok(userDetailsService.save(u));
+
+        return ResponseEntity.ok(userDetailsService.saveDoctor(user));
     }
 
 

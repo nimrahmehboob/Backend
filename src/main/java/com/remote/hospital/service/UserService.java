@@ -1,17 +1,19 @@
 package com.remote.hospital.service;
 
 import com.remote.hospital.entity.DTO.DoctorDTO;
+import com.remote.hospital.entity.Doctor_Specialization;
 import com.remote.hospital.entity.Role;
+import com.remote.hospital.entity.Specialization;
 import com.remote.hospital.entity.User;
+import com.remote.hospital.repository.DoctorSpecializationRepository;
+import com.remote.hospital.repository.SpecializationRepository;
 import com.remote.hospital.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +23,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DoctorSpecializationRepository doctorSpecializationRepository;
+
+    @Autowired
+    private SpecializationRepository specializationRepository;
+
+    @Autowired
+    DoctorSpecializationService doctorSpecializationService;
 //    public void saveUser(User user) {
 //        userRepository.save(user);
 //    }
@@ -35,7 +45,17 @@ public class UserService {
 
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmailAddress(email);
+        User u = new User();
+        try {
+             u = userRepository.findByEmailAddress(email);
+
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return u;
     }
 
     @CrossOrigin
@@ -51,6 +71,55 @@ public class UserService {
 //                    .collect(Collectors.toList());
 
 //        return  userRepository.findAll().stream().filter(u-> u.getActive() !=null && u.getActive() == false && u.getRole().getId() == 3).collect(Collectors.toList());
+
+    }
+
+
+    public List<DoctorDTO> getAllDoctorsWithAreas(){
+
+        Role r =new Role();
+        r.setId(3L);
+        r.setName("Doctor");
+        List<User> doctors= userRepository.findAllByIsActiveAndRole(true,r);
+
+            List<DoctorDTO> allDoctorsInfo = new ArrayList<>();
+        for (User d:
+             doctors) {
+                DoctorDTO doctorDTO = new DoctorDTO();
+                doctorDTO.email = d.getEmailAddress();
+                doctorDTO.cnic = d.getCnic();
+                doctorDTO.gender = d.getGender();
+                doctorDTO.name = d.getUser_name();
+                doctorDTO.number = d.getPhone_number();
+               List<Doctor_Specialization> doctor_specialization = doctorSpecializationRepository.findAll()
+                        .stream()
+                        .filter(x->x.getDoctorId() == d.getId())
+                        .collect(Collectors.toList());
+
+//            System.out.println(ds);
+//            > allSpecialization=  specializationRepository.findById((d.getId()));
+//            System.out.println(allSpecialization);
+
+
+            List<String> areas= new ArrayList<>();
+            for(int i=0;i<doctor_specialization.size();i++)
+            {
+
+                Optional<Specialization> s = specializationRepository.findById(doctor_specialization.get(i).getSpecializationId());
+                areas.add(s.get().getName());
+//                doctorDTO.area.add(s.get().getName());
+            }
+            doctorDTO.area= areas;
+//            for (Specialization s:
+//                 allSpecialization) {
+//                doctorDTO.area.add(s.getName());
+//            }
+//               doctorDTO.area = allSpecialization.stream().map(x->x.getName()).collect(Collectors.toList());
+                allDoctorsInfo.add(doctorDTO);
+        }
+        return allDoctorsInfo;
+
+
 
     }
 

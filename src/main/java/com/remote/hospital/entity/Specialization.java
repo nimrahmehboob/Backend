@@ -1,13 +1,11 @@
 package com.remote.hospital.entity;
 
-import net.bytebuddy.dynamic.loading.InjectionClassLoader;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "Specialization")
 @Entity
-public class Speacialization {
+public class Specialization {
 
 
     @Id
@@ -92,10 +90,10 @@ public class Speacialization {
     }
 
 
-    public Speacialization() {
+    public Specialization() {
     }
 
-    public Speacialization(Long id, String name, Date created_On, Long created_By, Date updated_On, Long updated_By, Boolean isActive) {
+    public Specialization(Long id, String name, Date created_On, Long created_By, Date updated_On, Long updated_By, Boolean isActive) {
         this.id = id;
         this.name = name;
         this.created_On = created_On;
