@@ -22,15 +22,22 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name="doc_id")
+    @JoinColumn(name="doc_id", insertable=false, updatable=false)
     private User doc;
     @ManyToOne
-    @JoinColumn(name="patient_id")
+    @JoinColumn(name="patient_id", insertable=false, updatable=false)
     private User patient;
+
+    @Column(name = "patient_id",nullable = false)
+    private Long patientId;
+
+    @Column(name = "doc_id",nullable = false)
+    private Long doctorId;
+
     @Column(name = "app_date")
     private Date appDate;
-    @Column(name = "app_time")
-    private Date appTime;
+    @Column(name = "app_slot")
+    private String appSlot;
     @Column(name = "app_reason")
     private String appReason;
     @Column(name = "created_on")
@@ -45,6 +52,13 @@ public class Appointment {
     private Boolean isActive;
     @Column(name= "app_fee")
     private Float appFee;
+    @Column(name = "gender")
+    private String gender;
+    @Column(name = "contact_number")
+    private String contactNumber;
+    @Column(name = "patient_name")
+    private String patientName;
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.remote.hospital.controller;
 
+import com.remote.hospital.entity.Appointment;
 import com.remote.hospital.entity.Specialization;
 import com.remote.hospital.service.SpecializationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class SpecializationController {
     public Specialization saveSpecialization(@RequestBody Specialization s){
         return ss.CreateSpecialization(s);
     }
+
 
 
 

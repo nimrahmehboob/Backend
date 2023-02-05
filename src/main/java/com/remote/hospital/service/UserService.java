@@ -76,52 +76,87 @@ public class UserService {
 
 
     public List<DoctorDTO> getAllDoctorsWithAreas(){
+        Role doctorRole = new Role();
+        doctorRole.setId(3L);
+        doctorRole.setName("Doctor");
 
-        Role r =new Role();
-        r.setId(3L);
-        r.setName("Doctor");
-        List<User> doctors= userRepository.findAllByIsActiveAndRole(true,r);
+        List<User> doctors = userRepository.findAllByIsActiveAndRole(true, doctorRole);
 
-            List<DoctorDTO> allDoctorsInfo = new ArrayList<>();
-        for (User d:
-             doctors) {
-                DoctorDTO doctorDTO = new DoctorDTO();
-                doctorDTO.email = d.getEmailAddress();
-                doctorDTO.cnic = d.getCnic();
-                doctorDTO.gender = d.getGender();
-                doctorDTO.name = d.getUser_name();
-                doctorDTO.number = d.getPhone_number();
-               List<Doctor_Specialization> doctor_specialization = doctorSpecializationRepository.findAll()
-                        .stream()
-                        .filter(x->x.getDoctorId() == d.getId())
-                        .collect(Collectors.toList());
+        List<DoctorDTO> allDoctorsInfo = new ArrayList<>();
+        Map<Long, List<String>> doctorSpecializations = new HashMap<>();
 
-//            System.out.println(ds);
-//            > allSpecialization=  specializationRepository.findById((d.getId()));
-//            System.out.println(allSpecialization);
+        List<Doctor_Specialization> doctorSpecializationEntities = doctorSpecializationRepository.findAll();
+        for (Doctor_Specialization ds : doctorSpecializationEntities) {
+            Long doctorId = ds.getDoctorId();
+            Optional<Specialization> specialization = specializationRepository.findById(ds.getSpecializationId());
 
+            if (specialization.isPresent()) {
+                String specializationName = specialization.get().getName();
 
-            List<String> areas= new ArrayList<>();
-            for(int i=0;i<doctor_specialization.size();i++)
-            {
+                if (!doctorSpecializations.containsKey(doctorId)) {
+                    doctorSpecializations.put(doctorId, new ArrayList<>());
+                }
 
-                Optional<Specialization> s = specializationRepository.findById(doctor_specialization.get(i).getSpecializationId());
-                areas.add(s.get().getName());
-//                doctorDTO.area.add(s.get().getName());
+                doctorSpecializations.get(doctorId).add(specializationName);
             }
-            doctorDTO.area= areas;
-//            for (Specialization s:
-//                 allSpecialization) {
-//                doctorDTO.area.add(s.getName());
-//            }
-//               doctorDTO.area = allSpecialization.stream().map(x->x.getName()).collect(Collectors.toList());
-                allDoctorsInfo.add(doctorDTO);
         }
+
+        for (User d : doctors) {
+            DoctorDTO doctorDTO = new DoctorDTO();
+            doctorDTO.email = d.getEmailAddress();
+            doctorDTO.cnic = d.getCnic();
+            doctorDTO.gender = d.getGender();
+            doctorDTO.name = d.getUser_name();
+            doctorDTO.number = d.getPhone_number();
+            doctorDTO.area = doctorSpecializations.getOrDefault(d.getId(), new ArrayList<>());
+            doctorDTO.id = d.getId();
+
+            allDoctorsInfo.add(doctorDTO);
+        }
+
         return allDoctorsInfo;
-
-
-
     }
+
+
+//    public List<DoctorDTO> getAllDoctorsWithAreas(){
+//
+//        Role r =new Role();
+//        r.setId(3L);
+//        r.setName("Doctor");
+//        List<User> doctors= userRepository.findAllByIsActiveAndRole(true,r);
+//
+//            List<DoctorDTO> allDoctorsInfo = new ArrayList<>();
+//        for (User d:
+//             doctors) {
+//                DoctorDTO doctorDTO = new DoctorDTO();
+//                doctorDTO.email = d.getEmailAddress();
+//                doctorDTO.cnic = d.getCnic();
+//                doctorDTO.gender = d.getGender();
+//                doctorDTO.name = d.getUser_name();
+//                doctorDTO.number = d.getPhone_number();
+//               List<Doctor_Specialization> doctor_specialization = doctorSpecializationRepository.findAll()
+//                        .stream()
+//                        .filter(x->x.getDoctorId() == d.getId())
+//                        .collect(Collectors.toList());
+//
+//
+//
+//            List<String> areas= new ArrayList<>();
+//            for(int i=0;i<doctor_specialization.size();i++)
+//            {
+//
+//                Optional<Specialization> s = specializationRepository.findById(doctor_specialization.get(i).getSpecializationId());
+//                areas.add(s.get().getName());
+//            }
+//            doctorDTO.area= areas;
+//
+//                allDoctorsInfo.add(doctorDTO);
+//        }
+//        return allDoctorsInfo;
+
+
+
+//    }
 
     public User saveUser(User user) {
         user.setCreated_on(new Date());

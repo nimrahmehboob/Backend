@@ -6,7 +6,7 @@ import java.util.List;
 
 public class DoctorDTO {
 
-
+    public Long id;
     public String name;
     public String email;
     public String password;
